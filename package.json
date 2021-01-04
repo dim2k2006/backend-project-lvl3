@@ -30,6 +30,7 @@
   },
   "homepage": "https://github.com/dim2k2006/backend-project-lvl3#readme",
   "dependencies": {
+    "axios": "^0.21.1",
     "commander": "^6.1.0",
     "lodash": "^4.17.20"
   },
@@ -40,6 +41,7 @@
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-jest": "^24.0.2",
     "jest": "^26.4.2",
-    "jest-cli": "^26.4.2"
+    "jest-cli": "^26.4.2",
+    "nock": "^13.0.5"
   }
 }
