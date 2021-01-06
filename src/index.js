@@ -9,8 +9,9 @@ const genFileName = (url) => {
   return `${fileName}.html`;
 };
 
-const loadPage = (url, dest) => axios
+const loadPage = (url, dest = process.cwd()) => axios
   .get(url)
-  .then(({ data }) => fs.writeFile(path.join(dest, genFileName(url)), data, 'utf-8'));
+  .then(({ data }) => fs.writeFile(path.join(dest, genFileName(url)), data, 'utf-8'))
+  .then(() => path.resolve(dest, genFileName(url)));
 
 export default loadPage;

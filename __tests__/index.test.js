@@ -26,9 +26,9 @@ test('Loads the page.', async () => {
     .get(endpoint)
     .reply(200, expected);
 
-  await loadPage(`${base}${endpoint}`, tempDir);
+  const filepath = await loadPage(`${base}${endpoint}`, tempDir);
 
-  const actual = await readFile(path.join(tempDir, filename));
+  const actual = await readFile(filepath);
 
   expect(actual).toBe(expected);
 });
