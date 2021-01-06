@@ -4,7 +4,7 @@
   "description": "Downloads pages from network with all assets.",
   "main": "src/index.js",
   "bin": {
-    "gendiff": "bin/gendiff.js"
+    "page-loader": "bin/pageLoader.js"
   },
   "engines": {
     "node": ">=14"
