@@ -71,13 +71,13 @@ test('Loads the pages and all its images.', async () => {
 
   const images = $('img');
 
-  images.each(async (idx, image) => {
-    const $image = $(image);
+  const promises = images
+    .map((idx, image) => {
+      const src = $(image).attr('src');
+      const imagePath = path.join(tempDir, src);
 
-    const source = $image.attr('src');
+      return fs.access(path.resolve(imagePath));
+    });
 
-    const imgFilePath = path.resolve(source);
-
-    expect(await fs.access(imgFilePath)).not.toThrow();
-  });
+  await expect(Promise.all(promises)).resolves.toBeTruthy();
 });

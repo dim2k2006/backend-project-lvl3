@@ -25,11 +25,12 @@ const loadPage = (url, dest = process.cwd()) => {
       const $image = $(image);
       const imgUrl = new URL($image.attr('src'), base);
       const filepath = path.parse(`${imgUrl.hostname}${imgUrl.pathname}`);
+      const newResourceName = genResourceName(`${filepath.dir}/${filepath.name}`);
 
       return new Promise((resolve, reject) => {
         axios
           .get(imgUrl.toString(), { responseType: 'arraybuffer' })
-          .then((response) => resolve({ ...response, filename: `${filepath.name}${filepath.ext}` }))
+          .then((response) => resolve({ ...response, filename: `${newResourceName}${filepath.ext}` }))
           .catch((error) => reject(error));
       });
     });
@@ -48,9 +49,13 @@ const loadPage = (url, dest = process.cwd()) => {
 
     return Promise.all(requests)
       .then((responses) => new Promise((resolve, reject) => {
-        return fs.mkdir(loadedAssetsPath)
+        fs.access(loadedAssetsPath)
           .then(() => resolve(responses))
-          .catch((error) => reject(error));
+          .catch(() => {
+            fs.mkdir(loadedAssetsPath)
+              .then(() => resolve(responses))
+              .catch((error) => reject(error));
+          });
       }))
       .then((responses) => {
         const promises = responses.map((response) => {
