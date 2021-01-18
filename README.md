@@ -10,3 +10,7 @@
 ## Usage
 
 [![asciicast](https://asciinema.org/a/l7ubjvOixkKzP6CzDukQA8DM0.svg)](https://asciinema.org/a/l7ubjvOixkKzP6CzDukQA8DM0)
+
+## Download page and all its images
+
+https://asciinema.org/a/F7zjtLGoGVMjwm7so88wRw5TY
