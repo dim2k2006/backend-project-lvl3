@@ -27,22 +27,14 @@ const loadPage = (url, dest = process.cwd()) => {
       const filepath = path.parse(`${imgUrl.hostname}${imgUrl.pathname}`);
       const newResourceName = genResourceName(`${filepath.dir}/${filepath.name}`);
 
+      $image.attr('src', `${loadedAssetsDirname}/${newResourceName}${filepath.ext}`);
+
       return new Promise((resolve, reject) => {
         axios
           .get(imgUrl.toString(), { responseType: 'arraybuffer' })
           .then((response) => resolve({ ...response, filename: `${newResourceName}${filepath.ext}` }))
           .catch((error) => reject(error));
       });
-    });
-
-    images.each((idx, image) => {
-      const $image = $(image);
-
-      const imgUrl = new URL($image.attr('src'), base);
-      const filepath = path.parse(`${imgUrl.hostname}${imgUrl.pathname}`);
-      const newImgSource = genResourceName(`${filepath.dir}/${filepath.name}`);
-
-      $image.attr('src', `${loadedAssetsDirname}/${newImgSource}${filepath.ext}`);
     });
 
     const htmlString = $.html();
