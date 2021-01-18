@@ -10,7 +10,7 @@ const loadPage = (url, dest = process.cwd()) => {
   const resourceLink = new URL(url);
   const base = `${resourceLink.protocol}//${resourceLink.hostname}`;
 
-  const resourceName = genResourceName(`${resourceLink.hostname}${resourceLink.pathname}`);
+  const resourceName = genResourceName(`${resourceLink.hostname}${resourceLink.pathname === '/' ? '' : resourceLink.pathname}`);
   const loadedFilename = `${resourceName}.html`;
   const loadedAssetsDirname = `${resourceName}_files`;
   const loadedAssetsPath = path.join(dest, loadedAssetsDirname);
