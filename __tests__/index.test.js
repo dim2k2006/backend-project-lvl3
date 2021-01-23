@@ -39,23 +39,27 @@ test('Loads the page.', async () => {
   expect(actual).toBe(formatHtml(expected));
 });
 
-test('Loads the pages and all its images.', async () => {
+test('Loads the pages and all its assets.', async () => {
   const resourceName = 'ru-hexlet-io-courses';
   const filesFolderName = `${resourceName}_files`;
-  const page = await readFile(getFixturePath('page-with-image.html'));
-  const expected = await readFile(getFixturePath('page-with-image-expected.html'));
+  const page = await readFile(getFixturePath('page-with-assets.html'));
+  const expected = await readFile(getFixturePath('page-with-assets-expected.html'));
   const pathname = '/courses';
-  const imgPathname = '/assets/professions/nodejs.png';
+  const assets = [
+    { pathname: '/assets/professions/nodejs.png', file: 'nodejs.png', contentType: 'image/png' },
+    { pathname: '/assets/application.css', file: 'application.css', contentType: 'text/css' },
+    { pathname: '/packs/js/runtime.js', file: 'runtime.js', contentType: 'application/javascript' },
+  ];
 
   nock(base)
     .get(pathname)
     .reply(200, page);
 
-  nock(base)
-    .get(imgPathname)
-    .replyWithFile(200, getFixturePath('nodejs.png'), {
-      'Content-Type': 'image/png',
-    });
+  assets.forEach((asset) => nock(base)
+    .get(asset.pathname)
+    .replyWithFile(200, getFixturePath(asset.file), {
+      'Content-Type': asset.contentType,
+    }));
 
   const filepath = await loadPage(`${base}${pathname}`, tempDir);
 
