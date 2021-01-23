@@ -22,6 +22,13 @@ const getTagSourcePropertyName = (tag) => {
 
 const isCanonicalLink = ($element) => $element[0].name === 'link' && $element.attr('rel') === 'canonical';
 
+const isAlternateLink = ($element) => $element[0].name === 'link' && $element.attr('rel') === 'alternate';
+
+const getDomainName = (hostName) => hostName
+  .split('.')
+  .slice(-2)
+  .join('.');
+
 const fetchResource = (resourceUrl, resourceFilename) => new Promise((resolve, reject) => axios
   .get(resourceUrl.toString(), { responseType: 'arraybuffer' })
   .then((response) => resolve({ ...response, filename: resourceFilename }))
@@ -42,7 +49,7 @@ const loadPage = (url, dest = process.cwd()) => {
 
     const source = new URL(resourceUrl);
 
-    return source.hostname === pageLink.hostname;
+    return getDomainName(source.hostname) === getDomainName(pageLink.hostname);
   };
 
   const processTag = ($element, propName) => {
@@ -69,6 +76,8 @@ const loadPage = (url, dest = process.cwd()) => {
       const { resourceUrl, resourceFilename } = processTag($element, propName);
 
       if (isCanonicalLink($element)) return null;
+
+      if (isAlternateLink($element)) return null;
 
       return fetchResource(resourceUrl, resourceFilename);
     },
