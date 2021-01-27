@@ -14,3 +14,7 @@
 ## Download page and all its images
 
 https://asciinema.org/a/F7zjtLGoGVMjwm7so88wRw5TY
+
+## Download page and all its resources
+
+[![asciicast](https://asciinema.org/a/fbSgYBw53F75Nb5cXO6leKEwQ.svg)](https://asciinema.org/a/fbSgYBw53F75Nb5cXO6leKEwQ)
