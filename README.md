@@ -18,3 +18,7 @@ https://asciinema.org/a/F7zjtLGoGVMjwm7so88wRw5TY
 ## Download page and all its resources
 
 [![asciicast](https://asciinema.org/a/fbSgYBw53F75Nb5cXO6leKEwQ.svg)](https://asciinema.org/a/fbSgYBw53F75Nb5cXO6leKEwQ)
+
+## Enable debugging
+
+[![asciicast](https://asciinema.org/a/Y9xi0L9AJoP6AE7tS42eLRI8I.svg)](https://asciinema.org/a/Y9xi0L9AJoP6AE7tS42eLRI8I)
