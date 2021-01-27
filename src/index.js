@@ -3,6 +3,10 @@ import { promises as fs } from 'fs';
 import axios from 'axios';
 import cheerio from 'cheerio';
 import prettier from 'prettier';
+import debug from 'debug';
+import 'axios-debug-log';
+
+const log = debug('page-loader');
 
 const genResourceName = (url) => url.replace(/[^a-zA-Z0-9]/g, '-');
 
@@ -131,9 +135,21 @@ const loadPage = (url, dest = process.cwd()) => {
       .then(() => ({ data: htmlString }));
   };
 
+  log(`Fetching page: ${url}`);
+
   const promise = axios
     .get(url)
+    .then((response) => {
+      log('Fetching resources');
+
+      return response;
+    })
     .then(loadResources)
+    .then((data) => {
+      log('Writing data to the file.');
+
+      return data;
+    })
     .then(({ data }) => fs.writeFile(loadedPagePath, prettier.format(data, { parser: 'html' }), 'utf-8'))
     .then(() => loadedPagePath);
 
