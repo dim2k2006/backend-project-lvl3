@@ -24,11 +24,6 @@ const isCanonicalLink = ($element) => $element[0].name === 'link' && $element.at
 
 const isAlternateLink = ($element) => $element[0].name === 'link' && $element.attr('rel') === 'alternate';
 
-const getDomainName = (hostName) => hostName
-  .split('.')
-  .slice(-2)
-  .join('.');
-
 const fetchResource = (resourceUrl, resourceFilename) => new Promise((resolve, reject) => axios
   .get(resourceUrl.toString(), { responseType: 'arraybuffer' })
   .then((response) => resolve({ ...response, filename: resourceFilename }))
@@ -49,7 +44,7 @@ const loadPage = (url, dest = process.cwd()) => {
 
     const source = new URL(resourceUrl);
 
-    return getDomainName(source.hostname) === getDomainName(pageLink.hostname);
+    return source.hostname === pageLink.hostname;
   };
 
   const processTag = ($element, propName) => {
