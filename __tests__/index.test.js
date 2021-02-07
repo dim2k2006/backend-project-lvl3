@@ -176,3 +176,25 @@ test('Throws an error if there was an error during saving loaded page.', async (
 
   await expect(loadPage(`${base}${pathname}`, tempDir)).rejects.toThrow('Error during saving the loaded page');
 });
+
+test('Throws an error if there was an error during saving loaded resource.', async () => {
+  const page = await readFile(getFixturePath('page-with-assets.html'));
+  const pathname = '/courses';
+  const assets = [
+    { pathname: '/assets/professions/nodejs.png', file: 'nodejs.png', contentType: 'image/png' },
+    { pathname: '/assets/application.css', file: 'application.css', contentType: 'text/css' },
+    { pathname: '/packs/js/runtime.js', file: 'runtime.js', contentType: 'application/javascript' },
+  ];
+
+  nock(base)
+    .get(pathname)
+    .reply(200, page);
+
+  assets.forEach((asset) => nock(base)
+    .get(asset.pathname)
+    .replyWithFile(200, getFixturePath(asset.file), {
+      'Content-Type': asset.contentType,
+    }));
+
+  await expect(loadPage(`${base}${pathname}`, tempDir)).rejects.toThrow();
+});

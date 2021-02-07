@@ -130,7 +130,11 @@ const loadPage = (url, dest = process.cwd()) => {
           const filepath = path.join(loadedResourcesPath, response.filename);
           const buffer = response.data;
 
-          return fs.writeFile(filepath, buffer);
+          return fs
+            .writeFile(filepath, buffer)
+            .catch(() => {
+              throw new Error(`Error during saving the loaded resource ${response.filename}`);
+            });
         });
 
         return Promise.all(promises);
