@@ -122,7 +122,9 @@ const loadPage = (url, dest = process.cwd()) => {
           .catch(() => {
             fs.mkdir(loadedResourcesPath)
               .then(() => resolve(responses))
-              .catch((error) => reject(error));
+              .catch((error) => {
+                throw new Error(error);
+              });
           });
       }))
       .then((responses) => {
