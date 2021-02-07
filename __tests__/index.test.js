@@ -18,6 +18,8 @@ const formatHtml = (htmlString) => prettier.format(htmlString, { parser: 'html' 
 let tempDir;
 
 beforeEach(async () => {
+  jest.resetModules();
+
   tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
 });
 
@@ -160,4 +162,17 @@ test('Throws an error if the there was an error during resource loading.', async
   });
 
   await expect(loadPage(url, tempDir)).rejects.toThrow(`Request to the resource ${base}/assets/professions/nodejs.png failed with status code 500`);
+});
+
+test('Throws an error if there was an error during saving loaded page.', async () => {
+  fs.writeFile = jest.fn().mockImplementation(() => Promise.reject(new Error('Some error')));
+
+  const response = await readFile(getFixturePath('ru-hexlet-io-courses.html'));
+  const pathname = '/courses';
+
+  nock(base)
+    .get(pathname)
+    .reply(200, response);
+
+  await expect(loadPage(`${base}${pathname}`, tempDir)).rejects.toThrow('Error during saving the loaded page');
 });
