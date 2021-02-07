@@ -85,3 +85,79 @@ test('Loads the pages and all its assets.', async () => {
 
   await expect(Promise.all(promises)).resolves.toBeTruthy();
 });
+
+test('Throws an error if the page was not found.', async () => {
+  const pathname = '/courses';
+  const url = `${base}${pathname}`;
+
+  nock(base)
+    .get(pathname)
+    .reply(404);
+
+  await expect(loadPage(url, tempDir)).rejects.toThrow(`Request to the page ${url} failed with status code 404`);
+});
+
+test('Throws an error if there was an error on the server during page loading.', async () => {
+  const pathname = '/courses';
+  const url = `${base}${pathname}`;
+
+  nock(base)
+    .get(pathname)
+    .reply(500);
+
+  await expect(loadPage(url, tempDir)).rejects.toThrow(`Request to the page ${url} failed with status code 500`);
+});
+
+test('Throws an error if the the resource was not found.', async () => {
+  const page = await readFile(getFixturePath('page-with-assets.html'));
+  const pathname = '/courses';
+  const assets = [
+    { pathname: '/assets/professions/nodejs.png', file: 'nodejs.png', contentType: 'image/png' },
+    { pathname: '/assets/application.css', file: 'application.css', contentType: 'text/css' },
+    { pathname: '/packs/js/runtime.js', file: 'runtime.js', contentType: 'application/javascript' },
+  ];
+  const url = `${base}${pathname}`;
+
+  nock(base)
+    .get(pathname)
+    .reply(200, page);
+
+  assets.forEach((asset) => {
+    const status = asset.file === 'nodejs.png' ? 404 : 200;
+
+    nock(base)
+      .get(asset.pathname)
+      .replyWithFile(status, getFixturePath(asset.file), {
+        'Content-Type': asset.contentType,
+      });
+  });
+
+  await expect(loadPage(url, tempDir)).rejects.toThrow(`Request to the resource ${base}/assets/professions/nodejs.png failed with status code 404`);
+});
+
+test('Throws an error if the there was an error during resource loading.', async () => {
+  const page = await readFile(getFixturePath('page-with-assets.html'));
+  const pathname = '/courses';
+  const assets = [
+    { pathname: '/assets/professions/nodejs.png', file: 'nodejs.png', contentType: 'image/png' },
+    { pathname: '/assets/application.css', file: 'application.css', contentType: 'text/css' },
+    { pathname: '/packs/js/runtime.js', file: 'runtime.js', contentType: 'application/javascript' },
+  ];
+  const url = `${base}${pathname}`;
+
+  nock(base)
+    .get(pathname)
+    .reply(200, page);
+
+  assets.forEach((asset) => {
+    const status = asset.file === 'nodejs.png' ? 500 : 200;
+
+    nock(base)
+      .get(asset.pathname)
+      .replyWithFile(status, getFixturePath(asset.file), {
+        'Content-Type': asset.contentType,
+      });
+  });
+
+  await expect(loadPage(url, tempDir)).rejects.toThrow(`Request to the resource ${base}/assets/professions/nodejs.png failed with status code 500`);
+});

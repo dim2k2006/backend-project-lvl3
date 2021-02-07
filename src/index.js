@@ -113,6 +113,9 @@ const loadPage = (url, dest = process.cwd()) => {
     const htmlString = $.html();
 
     return Promise.all(requests)
+      .catch((error) => {
+        throw new Error(`Request to the resource ${error.response.config.url} failed with status code ${error.response.status}`);
+      })
       .then((responses) => new Promise((resolve, reject) => {
         fs.access(loadedResourcesPath)
           .then(() => resolve(responses))
@@ -139,6 +142,9 @@ const loadPage = (url, dest = process.cwd()) => {
 
   const promise = axios
     .get(url)
+    .catch((error) => {
+      throw new Error(`Request to the page ${url} failed with status code ${error.response.status}`);
+    })
     .then((response) => {
       log('Fetching resources');
 
