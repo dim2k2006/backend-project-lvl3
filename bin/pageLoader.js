@@ -11,6 +11,11 @@ program
   .arguments('<pageUrl>')
   .option('-o, --output [dir]', 'output dir', process.cwd())
   .action((pageUrl, options) => loadPage(pageUrl, options.output)
-    .then((filepath) => console.log(filepath)));
+    .then((filepath) => console.log(filepath))
+    .catch((error) => {
+      console.error(error);
+
+      process.exitCode = 1;
+    }));
 
 program.parse(process.argv);
