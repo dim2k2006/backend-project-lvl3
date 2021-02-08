@@ -17,10 +17,14 @@ const formatHtml = (htmlString) => prettier.format(htmlString, { parser: 'html' 
 
 let tempDir;
 
+const realWriteFile = fs.writeFile;
+
 beforeEach(async () => {
-  jest.resetModules();
+  jest.clearAllMocks();
 
   tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
+
+  fs.writeFile = realWriteFile;
 });
 
 const base = 'https://ru.hexlet.io';
@@ -178,6 +182,8 @@ test('Throws an error if there was an error during saving loaded page.', async (
 });
 
 test('Throws an error if there was an error during saving loaded resource.', async () => {
+  fs.writeFile = jest.fn().mockImplementation(() => Promise.reject(new Error('Some error')));
+
   const page = await readFile(getFixturePath('page-with-assets.html'));
   const pathname = '/courses';
   const assets = [
@@ -197,4 +203,26 @@ test('Throws an error if there was an error during saving loaded resource.', asy
     }));
 
   await expect(loadPage(`${base}${pathname}`, tempDir)).rejects.toThrow();
+});
+
+test('Throws an error if the dest folder does not exist.', async () => {
+  const page = await readFile(getFixturePath('page-with-assets.html'));
+  const pathname = '/courses';
+  const assets = [
+    { pathname: '/assets/professions/nodejs.png', file: 'nodejs.png', contentType: 'image/png' },
+    { pathname: '/assets/application.css', file: 'application.css', contentType: 'text/css' },
+    { pathname: '/packs/js/runtime.js', file: 'runtime.js', contentType: 'application/javascript' },
+  ];
+
+  nock(base)
+    .get(pathname)
+    .reply(200, page);
+
+  assets.forEach((asset) => nock(base)
+    .get(asset.pathname)
+    .replyWithFile(200, getFixturePath(asset.file), {
+      'Content-Type': asset.contentType,
+    }));
+
+  await expect(loadPage(`${base}${pathname}`, './some-non-existing-folder')).rejects.toThrow('Dest folder does not exist');
 });

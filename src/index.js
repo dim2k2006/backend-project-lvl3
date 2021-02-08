@@ -146,11 +146,16 @@ const loadPage = (url, dest = process.cwd()) => {
 
   log(`Fetching page: ${url}`);
 
-  const promise = axios
-    .get(url)
-    .catch((error) => {
-      throw new Error(`Request to the page ${url} failed with status code ${error.response.status}`);
+  const promise = fs
+    .access(dest)
+    .catch(() => {
+      throw new Error('Dest folder does not exist');
     })
+    .then(() => axios
+      .get(url)
+      .catch((error) => {
+        throw new Error(`Request to the page ${url} failed with status code ${error.response.status}`);
+      }))
     .then((response) => {
       log('Fetching resources');
 
