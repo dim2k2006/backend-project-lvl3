@@ -22,3 +22,7 @@ https://asciinema.org/a/F7zjtLGoGVMjwm7so88wRw5TY
 ## Enable debugging
 
 [![asciicast](https://asciinema.org/a/Y9xi0L9AJoP6AE7tS42eLRI8I.svg)](https://asciinema.org/a/Y9xi0L9AJoP6AE7tS42eLRI8I)
+
+## Handles errors
+
+[![asciicast](https://asciinema.org/a/dWVDev9irFzIUkDPSsw47oWH2.svg)](https://asciinema.org/a/dWVDev9irFzIUkDPSsw47oWH2)
