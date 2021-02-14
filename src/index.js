@@ -29,7 +29,9 @@ const isCanonicalLink = ($element) => $element[0].name === 'link' && $element.at
 
 const isAlternateLink = ($element) => $element[0].name === 'link' && $element.attr('rel') === 'alternate';
 
-const loadPage = (url, dest = process.cwd()) => {
+const loadPage = (url, dest = process.cwd(), config = {}) => {
+  const { isSpinnerVisible = false } = config;
+
   const pageLink = new URL(url);
   const base = `${pageLink.protocol}//${pageLink.hostname}`;
 
@@ -187,7 +189,7 @@ const loadPage = (url, dest = process.cwd()) => {
       tasks.add(task);
       tasks.add(resourcesTask);
 
-      tasks.run();
+      if (isSpinnerVisible) tasks.run();
 
       return request;
     })
