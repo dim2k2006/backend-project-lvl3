@@ -3,6 +3,7 @@ import { promises as fs } from 'fs';
 import axios from 'axios';
 import cheerio from 'cheerio';
 import prettier from 'prettier';
+import Listr from 'listr';
 import debug from 'debug';
 import 'axios-debug-log';
 
@@ -28,11 +29,6 @@ const isCanonicalLink = ($element) => $element[0].name === 'link' && $element.at
 
 const isAlternateLink = ($element) => $element[0].name === 'link' && $element.attr('rel') === 'alternate';
 
-const fetchResource = (resourceUrl, resourceFilename) => new Promise((resolve, reject) => axios
-  .get(resourceUrl.toString(), { responseType: 'arraybuffer' })
-  .then((response) => resolve({ ...response, filename: resourceFilename }))
-  .catch((error) => reject(error)));
-
 const loadPage = (url, dest = process.cwd()) => {
   const pageLink = new URL(url);
   const base = `${pageLink.protocol}//${pageLink.hostname}`;
@@ -42,6 +38,26 @@ const loadPage = (url, dest = process.cwd()) => {
   const loadedResourcesDirname = `${pageName}_files`;
   const loadedResourcesPath = path.join(dest, loadedResourcesDirname);
   const loadedPagePath = path.join(dest, loadedPageName);
+
+  const tasks = new Listr([]);
+
+  const resourcesTasks = new Listr([], { concurrent: true });
+
+  const fetchResource = (resourceUrl, resourceFilename) => {
+    const request = new Promise((resolve, reject) => axios
+      .get(resourceUrl.toString(), { responseType: 'arraybuffer' })
+      .then((response) => resolve({ ...response, filename: resourceFilename }))
+      .catch((error) => reject(error)));
+
+    const task = {
+      title: `Fetching ${resourceUrl} resource`,
+      task: () => request,
+    };
+
+    resourcesTasks.add(task);
+
+    return request;
+  };
 
   const isLocalResource = (resourceUrl) => {
     if (resourceUrl.startsWith('/')) return true;
@@ -151,11 +167,30 @@ const loadPage = (url, dest = process.cwd()) => {
     .catch(() => {
       throw new Error('Dest folder does not exist');
     })
-    .then(() => axios
-      .get(url)
-      .catch((error) => {
-        throw new Error(`Request to the page ${url} failed with status code ${error.response.status}`);
-      }))
+    .then(() => {
+      const request = axios
+        .get(url)
+        .catch((error) => {
+          throw new Error(`Request to the page ${url} failed with status code ${error.response.status}`);
+        });
+
+      const task = {
+        title: `Fetching page: ${url}`,
+        task: () => request,
+      };
+
+      const resourcesTask = {
+        title: 'Fetching resources',
+        task: () => resourcesTasks,
+      };
+
+      tasks.add(task);
+      tasks.add(resourcesTask);
+
+      tasks.run();
+
+      return request;
+    })
     .then((response) => {
       log('Fetching resources');
 
