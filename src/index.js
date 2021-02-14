@@ -7,6 +7,10 @@ import Listr from 'listr';
 import debug from 'debug';
 import 'axios-debug-log';
 
+const axiosInstance = axios.create({
+  timeout: 3000,
+});
+
 const log = debug('page-loader');
 
 const genResourceName = (url) => url.replace(/[^a-zA-Z0-9]/g, '-');
@@ -46,7 +50,7 @@ const loadPage = (url, dest = process.cwd(), config = {}) => {
   const resourcesTasks = new Listr([], { concurrent: true });
 
   const fetchResource = (resourceUrl, resourceFilename) => {
-    const request = new Promise((resolve, reject) => axios
+    const request = new Promise((resolve, reject) => axiosInstance
       .get(resourceUrl.toString(), { responseType: 'arraybuffer' })
       .then((response) => resolve({ ...response, filename: resourceFilename }))
       .catch((error) => reject(error)));
@@ -170,7 +174,7 @@ const loadPage = (url, dest = process.cwd(), config = {}) => {
       throw new Error('Dest folder does not exist');
     })
     .then(() => {
-      const request = axios
+      const request = axiosInstance
         .get(url)
         .catch((error) => {
           throw new Error(`Request to the page ${url} failed with status code ${error.response.status}`);
