@@ -26,3 +26,7 @@ https://asciinema.org/a/F7zjtLGoGVMjwm7so88wRw5TY
 ## Handles errors
 
 [![asciicast](https://asciinema.org/a/dWVDev9irFzIUkDPSsw47oWH2.svg)](https://asciinema.org/a/dWVDev9irFzIUkDPSsw47oWH2)
+
+## Show preloader during resources loading
+
+[![asciicast](https://asciinema.org/a/bKUXGafaljGQGbxYQS1MhEouX.svg)](https://asciinema.org/a/bKUXGafaljGQGbxYQS1MhEouX)
