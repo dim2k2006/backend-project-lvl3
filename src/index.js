@@ -177,6 +177,10 @@ const loadPage = (url, dest = process.cwd(), config = {}) => {
       const request = axiosInstance
         .get(url)
         .catch((error) => {
+          if (error.code === 'ECONNABORTED') {
+            throw new Error(`A timeout happened on url ${url}`);
+          }
+
           throw new Error(`Request to the page ${url} failed with status code ${error.response.status}`);
         });
 
