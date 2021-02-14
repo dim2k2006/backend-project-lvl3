@@ -103,6 +103,17 @@ test('Throws an error if the page was not found.', async () => {
   await expect(loadPage(url, tempDir)).rejects.toThrow(`Request to the page ${url} failed with status code 404`);
 });
 
+test('Throws an error if there was no response from the server.', async () => {
+  const pathname = '/courses';
+  const url = `${base}${pathname}`;
+
+  nock(base)
+    .get(pathname)
+    .reply(444);
+
+  await expect(loadPage(url, tempDir)).rejects.toThrow(`Request to the page ${url} failed with status code 444`);
+});
+
 test('Throws an error if there was an error on the server during page loading.', async () => {
   const pathname = '/courses';
   const url = `${base}${pathname}`;
